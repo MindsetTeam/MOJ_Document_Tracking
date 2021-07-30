@@ -10,7 +10,11 @@ import useSWR, { mutate } from "swr";
 
 import AddModal from "../components/document/AddModal";
 import DocumentsTable from "../components/document/DocumentsTable";
+import en from '../locales/en.js'
+import km from '../locales/km.js'
 import OutgoingModal from "../components/document/OutgoingModal";
+import LocaleSwitcher from "../components/locale-switcher";
+import { useRouter } from "next/router";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -27,6 +31,10 @@ export default function Home() {
   const { data: dataIncome } = useSWR("/api/documents?income=true");
   const { data: dataOutgoing } = useSWR("/api/documents");
 
+  const router = useRouter()
+  const { locale } = router
+  const localeTranslate = locale === 'en' ? en : km;
+
   const operations = (
     <>
       <Button
@@ -35,9 +43,9 @@ export default function Home() {
           setPrintModalVisible(true);
         }}
       >
-        Print
+        បោះពុម្ព
       </Button>
-      <Button onClick={() => setAddModalVisible(true)}>Add Doc</Button>
+      <Button onClick={() => setAddModalVisible(true)}>បញ្ចូល​ឯកសារ</Button>
     </>
   );
 
@@ -72,9 +80,10 @@ export default function Home() {
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
-
+ 
   return (
     <section className="max-w-screen-xl mx-auto px-3 ">
+      <LocaleSwitcher/>
       <AddModal visible={addModalVisible} setVisible={setAddModalVisible} />
       <OutgoingModal
         visible={outgoingModalVisible}
@@ -126,7 +135,7 @@ export default function Home() {
         </Form>
       </Modal>
       <Tabs tabBarExtraContent={operations}>
-        <TabPane tab="Incoming Doc" key="1">
+        <TabPane tab="ឯកសារចូល" key="1">
           <DocumentsTable
             type="income"
             data={dataIncome}
@@ -135,7 +144,7 @@ export default function Home() {
             // setDrawerVisible={setDrawerVisible}
           />
         </TabPane>
-        <TabPane tab="Outgoing Doc" className="text-green-300" key="2">
+        <TabPane tab="ឯកសារចេញ" className="text-green-300" key="2">
           <DocumentsTable
             type="outgoing"
             data={dataOutgoing}
@@ -157,7 +166,7 @@ export default function Home() {
          <Tabs tabPosition={'right'}>
           {(selectedDocument?.files||[]).map((v,i)=>{
 
-            return (<TabPane tab={v.split('public\\file-uploads\\')[1]} key={i}>
+            return (<TabPane tab={v.split('public\\file-uploads\\')[1].slice(0,13)} key={i}>
               <Document
             file={`http://localhost:3000/${v.split('public\\')[1]}`}
             onLoadSuccess={onDocumentLoadSuccess}

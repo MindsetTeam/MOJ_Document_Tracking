@@ -12,27 +12,42 @@ const data = [
   },
 ];
 
-const DocumentsTable = ({ type, data, outgoing,  setSelectedDocumentPDF={setSelectedDocumentPDF} }) => {
+const DocumentsTable = ({
+  type,
+  data,
+  outgoing,
+  setSelectedDocumentPDF = { setSelectedDocumentPDF },
+}) => {
+  const handlerDeleteById = async (id) => {
+    await fetch("/api/documents/" + id, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    mutate("/api/documents?income=true");
+    mutate("/api/documents");
+  };
   let columns = [
     {
-      title: "ID",
+      title: "លេខ​",
       dataIndex: "_id",
       key: "_id",
     },
     {
-      title: "Subject",
+      title: "កម្ផវត្ថុ",
       dataIndex: "subject",
       key: "subject",
     },
     {
       dataIndex: "files",
-      title: "Files",
+      title: "ឯកសារច្បាប់",
       key: "files",
-      render: (files,record) => {
+      render: (files, record) => {
         return (
           <a
             onClick={() => {
-               setSelectedDocumentPDF(record)
+              setSelectedDocumentPDF(record);
             }}
           >
             {files.map((v) => v.split("public\\file-uploads\\")[1]).join("\n")}
@@ -41,7 +56,7 @@ const DocumentsTable = ({ type, data, outgoing,  setSelectedDocumentPDF={setSele
       },
     },
     {
-      title: "Department",
+      title: "ប្រភព",
       dataIndex: "department",
       key: "department",
       render: (tags) => (
@@ -58,7 +73,7 @@ const DocumentsTable = ({ type, data, outgoing,  setSelectedDocumentPDF={setSele
     },
     {
       dataIndex: "note",
-      title: "Note",
+      title: "ផ្សេង",
       key: "note",
     },
     {
@@ -89,7 +104,14 @@ const DocumentsTable = ({ type, data, outgoing,  setSelectedDocumentPDF={setSele
             </a>
           )}
           <a>Edit</a>
-          <a className="text-red-600 hover:text-red-300">Delete</a>
+          <a
+            className="text-red-600 hover:text-red-300"
+            onClick={() => {
+              handlerDeleteById(record._id);
+            }}
+          >
+            Delete
+          </a>
         </Space>
       ),
     },
@@ -97,7 +119,7 @@ const DocumentsTable = ({ type, data, outgoing,  setSelectedDocumentPDF={setSele
 
   if (type != "income") {
     columns[columns.length - 3] = {
-      title: "To",
+      title: "ទៅប្រភព",
       dataIndex: "toDepartment",
       key: "toDepartment",
       render: (tags) => (

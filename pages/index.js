@@ -1,6 +1,7 @@
 import { Button, Tabs, Modal, Form, Drawer, DatePicker, Select } from "antd";
 import moment from "moment";
 import { Document, Page, pdfjs } from "react-pdf";
+import  useTranslation from 'next-translate/useTranslation'
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
@@ -10,8 +11,6 @@ import useSWR, { mutate } from "swr";
 
 import AddModal from "../components/document/AddModal";
 import DocumentsTable from "../components/document/DocumentsTable";
-import en from '../locales/en.js'
-import km from '../locales/km.js'
 import OutgoingModal from "../components/document/OutgoingModal";
 import LocaleSwitcher from "../components/locale-switcher";
 import { useRouter } from "next/router";
@@ -30,10 +29,9 @@ export default function Home() {
   const [selectDocumentID, setSelectDocumentID] = useState(null);
   const { data: dataIncome } = useSWR("/api/documents?income=true");
   const { data: dataOutgoing } = useSWR("/api/documents");
+  const {t} = useTranslation('home')
 
   const router = useRouter()
-  const { locale } = router
-  const localeTranslate = locale === 'en' ? en : km;
 
   const operations = (
     <>
@@ -43,9 +41,9 @@ export default function Home() {
           setPrintModalVisible(true);
         }}
       >
-        បោះពុម្ព
+        {t('print')}
       </Button>
-      <Button onClick={() => setAddModalVisible(true)}>បញ្ចូល​ឯកសារ</Button>
+      <Button onClick={() => setAddModalVisible(true)}>{t('incoming doc')}</Button>
     </>
   );
 
@@ -91,7 +89,9 @@ export default function Home() {
         handlerOk={handlerOkOutgoing}
       />
       <Modal
-        title="Print"
+        title={t('print')}
+        okText={t('ok')}
+        cancelText={t('cancel')}
         visible={printModalVisible}
         onOk={() => {
           const printWindow = window.frames["printContainer"];
@@ -109,21 +109,21 @@ export default function Home() {
         <Form form={formPrint} name="printForm">
           <Form.Item
             name="documentType"
-            label="Type"
+            label={t('type')}
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Select placeholder="Select a option">
-              <Option value="Incoming">Incoming</Option>
-              <Option value="Outgoing">Outgoing</Option>
+            <Select placeholder={t('select a option')}>
+              <Option value="Incoming">{t('incoming')}</Option>
+              <Option value="Outgoing">{t('outgoing doc')}</Option>
             </Select>
           </Form.Item>
           <Form.Item
             name="date"
-            label="Type"
+            label={t('date')}
             rules={[
               {
                 required: true,
@@ -135,7 +135,7 @@ export default function Home() {
         </Form>
       </Modal>
       <Tabs tabBarExtraContent={operations}>
-        <TabPane tab="ឯកសារចូល" key="1">
+        <TabPane tab={t('incoming')} key="1">
           <DocumentsTable
             type="income"
             data={dataIncome}
@@ -144,7 +144,7 @@ export default function Home() {
             // setDrawerVisible={setDrawerVisible}
           />
         </TabPane>
-        <TabPane tab="ឯកសារចេញ" className="text-green-300" key="2">
+        <TabPane tab={t('outgoing doc')} className="text-green-300" key="2">
           <DocumentsTable
             type="outgoing"
             data={dataOutgoing}
@@ -157,7 +157,7 @@ export default function Home() {
       {/* Drawer */}
       <Drawer
         title="View PDF"
-        width={"1000"}
+        width={"1200"}
         onClose={() => {
           setDrawerVisible(false);
         }}
@@ -166,7 +166,7 @@ export default function Home() {
          <Tabs tabPosition={'right'}>
           {(selectedDocument?.files||[]).map((v,i)=>{
 
-            return (<TabPane tab={v.split('public\\file-uploads\\')[1].slice(0,13)} key={i}>
+            return (<TabPane tab={v.split('public\\file-uploads\\')[1].slice(0,24)} key={i}>
               <Document
             file={`http://localhost:3000/${v.split('public\\')[1]}`}
             onLoadSuccess={onDocumentLoadSuccess}

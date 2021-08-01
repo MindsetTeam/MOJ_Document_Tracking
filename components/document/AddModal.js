@@ -6,10 +6,12 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import { mutate } from "swr";
+import useTranslation from "next-translate/useTranslation";
 
 const { Option } = Select;
 
 const AddModal = ({ visible, setVisible }) => {
+  const {t}=useTranslation('home')
   const [formAdd] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [fileList, setFileList] = useState([]);
@@ -72,17 +74,19 @@ const AddModal = ({ visible, setVisible }) => {
   };
   return (
     <Modal
-      title="Add New Incoming Document"
+      title={t("add new incoming document")}
       visible={visible}
       onOk={handleOk}
       destroyOnClose
+      okText={t("ok")}
+      cancelText={t("cancel")}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
       maskClosable={false}
     >
       <Form name="basic" initialValues={{ prefix: "855" }} form={formAdd}>
         <Form.Item
-          label="Username"
+          label={t("username")}
           name="username"
           // rules={[{ required: true, message: "Please input your username!" }]}
         >
@@ -90,7 +94,7 @@ const AddModal = ({ visible, setVisible }) => {
         </Form.Item>
         <Form.Item
           name="phoneNumber"
-          label="Phone Number"
+          label={t('phoneNumber')}
           // rules={[
           //   { required: true, message: "Please input your phone number!" },
           // ]}
@@ -101,7 +105,7 @@ const AddModal = ({ visible, setVisible }) => {
           />
         </Form.Item>
         <Form.Item
-          label="Subject"
+          label={t("subject")}
           name="subject"
           // rules={[{ required: true, message: "Please input your Subject!" }]}
         >
@@ -130,7 +134,7 @@ const AddModal = ({ visible, setVisible }) => {
                     noStyle
                   >
                     <Input
-                      placeholder="department name"
+                      placeholder={t("department name")}
                       style={{ width: "95%" }}
                     />
                   </Form.Item>
@@ -149,14 +153,14 @@ const AddModal = ({ visible, setVisible }) => {
                   style={{ width: "60%" }}
                   icon={<PlusOutlined />}
                 >
-                  Add More Department
+                  {t("add department")}
                 </Button>
                 <Form.ErrorList errors={errors} />
               </Form.Item>
             </>
           )}
         </Form.List>
-        <Form.Item label="Note" name="note">
+        <Form.Item label={t("note")} name="note">
           <Input />
         </Form.Item>
         <Upload
@@ -165,7 +169,7 @@ const AddModal = ({ visible, setVisible }) => {
           multiple
           onChange={onChangeUploadFile}
         >
-          <Button icon={<UploadOutlined />}>Click to Files</Button>
+          <Button icon={<UploadOutlined />}>{t("upload files")}</Button>
         </Upload>
       </Form>
     </Modal>

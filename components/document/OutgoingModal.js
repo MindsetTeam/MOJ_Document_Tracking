@@ -5,8 +5,10 @@ import {
   UploadOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
+import useTranslation from "next-translate/useTranslation";
 
 const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
+  const {t} = useTranslation('home')
   const [outgoingForm] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
   const handleCancel = () => {
@@ -17,8 +19,10 @@ const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
   
   return (
     <Modal
-      title="Outgoing Document"
+      title={t("outgoing doc")}
       visible={visible}
+      okText={t("ok")}
+      cancelText={t("cancel")}
       onOk={() => {
         setConfirmLoading(true)
         const data =outgoingForm.getFieldsValue()
@@ -38,7 +42,7 @@ const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
             <>
               {fields.map((field, index) => (
                 <Form.Item
-                  label={index === 0 ? "Department" : ""}
+                  label={index === 0 ? t('department') : ""}
                   required={false}
                   key={field.key}
                 >
@@ -56,7 +60,7 @@ const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
                     noStyle
                   >
                     <Input
-                      placeholder="department name"
+                      placeholder={t("department name")}
                       style={{ width: "95%" }}
                     />
                   </Form.Item>
@@ -75,7 +79,7 @@ const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
                   style={{ width: "60%" }}
                   icon={<PlusOutlined />}
                 >
-                  Add More Department
+                  {t("add department")}
                 </Button>
                 <Form.ErrorList errors={errors} />
               </Form.Item>

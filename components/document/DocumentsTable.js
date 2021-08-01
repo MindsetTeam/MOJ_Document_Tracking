@@ -1,4 +1,5 @@
 import { Table, Tag, Space } from "antd";
+import useTranslation from "next-translate/useTranslation";
 import { mutate } from "swr";
 
 const data = [
@@ -18,6 +19,7 @@ const DocumentsTable = ({
   outgoing,
   setSelectedDocumentPDF = { setSelectedDocumentPDF },
 }) => {
+  const {t} = useTranslation('home')
   const handlerDeleteById = async (id) => {
     await fetch("/api/documents/" + id, {
       method: "DELETE",
@@ -30,18 +32,18 @@ const DocumentsTable = ({
   };
   let columns = [
     {
-      title: "លេខ​",
+      title: t('id'),
       dataIndex: "_id",
       key: "_id",
     },
     {
-      title: "កម្ផវត្ថុ",
+      title: t('subject'),
       dataIndex: "subject",
       key: "subject",
     },
     {
       dataIndex: "files",
-      title: "ឯកសារច្បាប់",
+      title: t('files'),
       key: "files",
       render: (files, record) => {
         return (
@@ -56,7 +58,7 @@ const DocumentsTable = ({
       },
     },
     {
-      title: "ប្រភព",
+      title: t('from'),
       dataIndex: "department",
       key: "department",
       render: (tags) => (
@@ -73,16 +75,16 @@ const DocumentsTable = ({
     },
     {
       dataIndex: "note",
-      title: "ផ្សេង",
+      title: t('note'),
       key: "note",
     },
     {
-      title: "Action",
+      title: t('action'),
       key: "action",
       render: (text, record) => (
         <Space size="middle" className="text-blue-600">
           {type == "income" ? (
-            <a onClick={outgoing.bind(null, record._id)}>Outgoing</a>
+            <a onClick={outgoing.bind(null, record._id)}>{t('outgoing')}</a>
           ) : (
             <a
               onClick={async () => {
@@ -100,17 +102,17 @@ const DocumentsTable = ({
                 mutate("/api/documents");
               }}
             >
-              Restore
+              {t('restore')}
             </a>
           )}
-          <a>Edit</a>
+          <a>{t('edit')}</a>
           <a
             className="text-red-600 hover:text-red-300"
             onClick={() => {
               handlerDeleteById(record._id);
             }}
           >
-            Delete
+            {t('delete')}
           </a>
         </Space>
       ),
@@ -119,7 +121,7 @@ const DocumentsTable = ({
 
   if (type != "income") {
     columns[columns.length - 3] = {
-      title: "ទៅប្រភព",
+      title: t('to'),
       dataIndex: "toDepartment",
       key: "toDepartment",
       render: (tags) => (

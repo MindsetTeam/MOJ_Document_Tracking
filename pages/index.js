@@ -1,10 +1,10 @@
 import { Button, Tabs, Modal, Form, Drawer, DatePicker, Select } from "antd";
 import moment from "moment";
 import { Document, Page, pdfjs } from "react-pdf";
-import  useTranslation from 'next-translate/useTranslation'
+import useTranslation from "next-translate/useTranslation";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
@@ -29,9 +29,9 @@ export default function Home() {
   const [selectDocumentID, setSelectDocumentID] = useState(null);
   const { data: dataIncome } = useSWR("/api/documents?income=true");
   const { data: dataOutgoing } = useSWR("/api/documents");
-  const {t} = useTranslation('home')
+  const { t } = useTranslation("home");
 
-  const router = useRouter()
+  const router = useRouter();
 
   const operations = (
     <>
@@ -41,9 +41,11 @@ export default function Home() {
           setPrintModalVisible(true);
         }}
       >
-        {t('print')}
+        {t("print")}
       </Button>
-      <Button onClick={() => setAddModalVisible(true)}>{t('incoming doc')}</Button>
+      <Button onClick={() => setAddModalVisible(true)}>
+        {t("incoming doc")}
+      </Button>
     </>
   );
 
@@ -66,22 +68,22 @@ export default function Home() {
   };
 
   // pdf
-  const [selectedDocument, setSelectedDocument] = useState(null)
+  const [selectedDocument, setSelectedDocument] = useState(null);
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
 
   const setSelectedDocumentPDF = (record) => {
     setSelectedDocument(record);
     setDrawerVisible(true);
-  }
+  };
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
- 
+
   return (
     <section className="max-w-screen-xl mx-auto px-3 ">
-      <LocaleSwitcher/>
+      <LocaleSwitcher />
       <AddModal visible={addModalVisible} setVisible={setAddModalVisible} />
       <OutgoingModal
         visible={outgoingModalVisible}
@@ -89,9 +91,9 @@ export default function Home() {
         handlerOk={handlerOkOutgoing}
       />
       <Modal
-        title={t('print')}
-        okText={t('ok')}
-        cancelText={t('cancel')}
+        title={t("print")}
+        okText={t("ok")}
+        cancelText={t("cancel")}
         visible={printModalVisible}
         onOk={() => {
           const printWindow = window.frames["printContainer"];
@@ -109,21 +111,21 @@ export default function Home() {
         <Form form={formPrint} name="printForm">
           <Form.Item
             name="documentType"
-            label={t('type')}
+            label={t("type")}
             rules={[
               {
                 required: true,
               },
             ]}
           >
-            <Select placeholder={t('select a option')}>
-              <Option value="Incoming">{t('incoming')}</Option>
-              <Option value="Outgoing">{t('outgoing doc')}</Option>
+            <Select placeholder={t("select a option")}>
+              <Option value="Incoming">{t("incoming")}</Option>
+              <Option value="Outgoing">{t("outgoing doc")}</Option>
             </Select>
           </Form.Item>
           <Form.Item
             name="date"
-            label={t('date')}
+            label={t("date")}
             rules={[
               {
                 required: true,
@@ -135,7 +137,7 @@ export default function Home() {
         </Form>
       </Modal>
       <Tabs tabBarExtraContent={operations}>
-        <TabPane tab={t('incoming')} key="1">
+        <TabPane tab={t("incoming")} key="1">
           <DocumentsTable
             type="income"
             data={dataIncome}
@@ -144,7 +146,7 @@ export default function Home() {
             // setDrawerVisible={setDrawerVisible}
           />
         </TabPane>
-        <TabPane tab={t('outgoing doc')} className="text-green-300" key="2">
+        <TabPane tab={t("outgoing doc")} className="text-green-300" key="2">
           <DocumentsTable
             type="outgoing"
             data={dataOutgoing}
@@ -163,23 +165,25 @@ export default function Home() {
         }}
         visible={drawerVisible}
       >
-         <Tabs tabPosition={'right'}>
-          {(selectedDocument?.files||[]).map((v,i)=>{
-
-            return (<TabPane tab={v.split('public\\file-uploads\\')[1].slice(0,24)} key={i}>
-              <Document
-            file={`http://localhost:3000/${v.split('public\\')[1]}`}
-            onLoadSuccess={onDocumentLoadSuccess}
-          >
-            <Page pageNumber={pageNumber} />
-          </Document>
-          <p>
-            Page {pageNumber} of {numPages}
-          </p>
-            </TabPane>)
-          })
-            }
-          
+        <Tabs tabPosition={"right"}>
+          {(selectedDocument?.files || []).map((v, i) => {
+            return (
+              <TabPane
+                tab={v.split("public\\file-uploads\\")[1].slice(0, 24)}
+                key={i}
+              >
+                <Document
+                  file={`http://localhost:3001/${v.split("public\\")[1]}`}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                >
+                  <Page pageNumber={pageNumber} />
+                </Document>
+                <p>
+                  Page {pageNumber} of {numPages}
+                </p>
+              </TabPane>
+            );
+          })}
         </Tabs>
       </Drawer>
       {/* Print Document */}
@@ -189,6 +193,11 @@ export default function Home() {
         style={{ display: "none" }}
       />
       <div id="printContent" style={{ display: "none" }}>
+        <section className="text-center">
+          <h1>ព្រះរាជាណាចក្រកម្ពុជា</h1>
+          <h1>ជាតិ សាសនា ព្រះមហាក្សត្រ</h1>
+          <h1 style={{ fontFamily: "tacteng" }}>6</h1>
+        </section>
         {(dataOutgoing || []).map((v, i) => {
           return (
             <h1 key={v._id}>
@@ -197,6 +206,64 @@ export default function Home() {
           );
         })}
         l{" "}
+      </div>
+      <div className="max-w-lg mx-auto">
+        <section className="text-center ">
+          <h1>ព្រះរាជាណាចក្រកម្ពុជា</h1>
+          <h1>ជាតិ សាសនា ព្រះមហាក្សត្រ</h1>
+          <h1 style={{ fontFamily: "tacteng" }}>6</h1>
+        </section>
+        <section style={{ width: "30%", textAlign: "center" }}>
+          <h1>ក្រសួងយុត្តិធម៌</h1>
+          <h1>នាយកដ្ឋានកិច្ចការរដ្ឋបាល</h1>
+        </section>
+        <section className="text-center">
+          <h1>លិខិតចូលសម្រាប់ថ្ងៃទី ១៥ ខែ តុលារ ឆ្នាំ ២០២១</h1>
+          <table id="printTable" style={{ width: "100%" }}>
+            <tr>
+              <th style={{ width: "6%"}}>ល.រ</th>
+              <th style={{ width: "40%"}}>កម្មវត្ថុ</th>
+              <th  style={{ width: "10%"}}>លេខ</th>
+              <th style={{ width: "15%"}}>ប្រភព</th>
+              <th style={{ width: "15%"}}>ចំនួនច្បាប់</th>
+              <th>ផ្សេងៗ</th>
+            </tr>
+            {Array(15)
+              .fill(0)
+              .map((v, i) => {
+                let returnDom = (
+                  <tr key={i}>
+                    <td>{i + 1}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                );
+                if (i == 14) {
+                  returnDom = (
+                    <>
+                      <tr key={i}>
+                        <td>{i + 1}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                      <tr key={i + 1}>
+                        <td colSpan="4">សរុប</td>
+                        <td></td>
+                        <td></td>
+                      </tr>
+                    </>
+                  );
+                }
+                return returnDom;
+              })}
+          </table>
+        </section>
       </div>
     </section>
   );

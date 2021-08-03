@@ -19,7 +19,7 @@ const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
   
   return (
     <Modal
-      title={t("outgoing doc")}
+      title={t("outgoing")}
       visible={visible}
       okText={t("ok")}
       cancelText={t("cancel")}

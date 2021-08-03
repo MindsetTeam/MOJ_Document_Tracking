@@ -13,6 +13,14 @@
   font-family: "Hanuman";
 }
 
+#section-to-print {
+  visibility: hidden;
+  position: absolute !important;
+  width: 100%;
+  left: 0;
+  top: 0;
+}
+
 #printContent text-center {
   text-align: center;
 }
@@ -22,4 +30,21 @@
 #printTable td {
   border: 1px solid black;
   border-collapse: collapse;
+}
+
+svg {
+  vertical-align: baseline;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  body *:not(#section-to-print *) {
+    height: 1px;
+  }
+  #section-to-print,
+  #section-to-print * {
+    visibility: visible;
+  }
 }

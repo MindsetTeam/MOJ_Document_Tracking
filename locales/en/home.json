@@ -3,9 +3,10 @@
   "en": "ENG",
   "print": "Print",
   "incoming": "Incoming",
-  "outgoing doc": "Outgoing",
+  "outgoing": "Outgoing",
   "switch locale": "Switch Locale",
-  "incoming doc": "Add Incoming",
+  "add incoming": "Add Incoming",
+  "no": "No.",
   "id": "ID",
   "subject": "Subject",
   "note": "Note",
@@ -15,7 +16,7 @@
   "action": "Action",
   "delete": "Delete",
   "edit": "Edit",
-  "outgoing": "Outgoing",
+  "toOutgoing": "Outgoing",
   "restore": "Restore",
   "department": "Department",
   "department name": "Department name",
@@ -28,5 +29,8 @@
   "type": "Type",
   "date": "Date",
   "select a option": "Select a option",
-  "add new incoming document" :"Add New Incoming Document"
+  "add new incoming document" :"Add New Incoming Document",
+  "view files": "View Uploaded Files in {{id}}",
+  "pdf pagination": "Page {{pageNumber}} of {{numPages}}",
+  "new tab": "View In New Tab"
 }

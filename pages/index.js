@@ -14,6 +14,7 @@ import DocumentsTable from "../components/document/DocumentsTable";
 import OutgoingModal from "../components/document/OutgoingModal";
 import LocaleSwitcher from "../components/locale-switcher";
 import { useRouter } from "next/router";
+import PrintDom from "../components/PrintDom";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -21,6 +22,7 @@ const { RangePicker } = DatePicker;
 
 export default function Home() {
   const [formPrint] = Form.useForm();
+  const [printType, setPrintType] = useState("incoming");
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [outgoingModalVisible, setOutgoingModalVisible] = useState(false);
@@ -44,7 +46,7 @@ export default function Home() {
         {t("print")}
       </Button>
       <Button onClick={() => setAddModalVisible(true)}>
-        {t("incoming doc")}
+        {t("add incoming")}
       </Button>
     </>
   );
@@ -96,19 +98,26 @@ export default function Home() {
         cancelText={t("cancel")}
         visible={printModalVisible}
         onOk={() => {
-          const printWindow = window.frames["printContainer"];
-          printWindow.document.write(`
-       <body onload="window.print()" >
-       ${document.getElementById("printContent").innerHTML}</body>
-       `);
-          printWindow.document.close();
+          window.print();
         }}
         confirmLoading={confirmLoadingPrint}
         onCancel={() => {
           setPrintModalVisible(false);
         }}
       >
-        <Form form={formPrint} name="printForm">
+        <Form
+          form={formPrint}
+          name="printForm"
+          onValuesChange={v=>{
+            if(v.documentType){
+              setPrintType(v.documentType)
+            }
+          }}
+          initialValues={{
+            documentType: printType,
+            date: [moment(), moment().add({ day: 1 })],
+          }}
+        >
           <Form.Item
             name="documentType"
             label={t("type")}
@@ -119,8 +128,8 @@ export default function Home() {
             ]}
           >
             <Select placeholder={t("select a option")}>
-              <Option value="Incoming">{t("incoming")}</Option>
-              <Option value="Outgoing">{t("outgoing doc")}</Option>
+              <Option value="incoming">{t("incoming")}</Option>
+              <Option value="outgoing">{t("outgoing")}</Option>
             </Select>
           </Form.Item>
           <Form.Item
@@ -132,7 +141,7 @@ export default function Home() {
               },
             ]}
           >
-            <RangePicker defaultValue={[moment(), moment().add({ day: 1 })]} />
+            <RangePicker />
           </Form.Item>
         </Form>
       </Modal>
@@ -146,7 +155,7 @@ export default function Home() {
             // setDrawerVisible={setDrawerVisible}
           />
         </TabPane>
-        <TabPane tab={t("outgoing doc")} className="text-green-300" key="2">
+        <TabPane tab={t("outgoing")} className="text-green-300" key="2">
           <DocumentsTable
             type="outgoing"
             data={dataOutgoing}
@@ -158,8 +167,8 @@ export default function Home() {
       <br />
       {/* Drawer */}
       <Drawer
-        title="View PDF"
-        width={"1200"}
+        title={t("view files", { id: selectedDocument?._id })}
+        width={"1000"}
         onClose={() => {
           setDrawerVisible(false);
         }}
@@ -173,13 +182,25 @@ export default function Home() {
                 key={i}
               >
                 <Document
-                  file={`http://localhost:3001/${v.split("public\\")[1]}`}
+                  externalLinkTarget="_blank"
+                  onItemClick={({ pageNumber }) =>
+                    alert("Clicked an item from page " + pageNumber + "!")
+                  }
+                  file={`/${v.split("public\\")[1]}`}
                   onLoadSuccess={onDocumentLoadSuccess}
                 >
-                  <Page pageNumber={pageNumber} />
+                  <Page pageNumber={pageNumber} width={700} />
                 </Document>
                 <p>
-                  Page {pageNumber} of {numPages}
+                  {t("pdf pagination", { pageNumber, numPages })}
+                  <a
+                    className="text-blue-500 ml-4"
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`/${v.split("public\\")[1]}`}
+                  >
+                    {t("new tab")}
+                  </a>
                 </p>
               </TabPane>
             );
@@ -187,84 +208,11 @@ export default function Home() {
         </Tabs>
       </Drawer>
       {/* Print Document */}
-      <iframe
-        id="printContainer"
-        name="printContainer"
-        style={{ display: "none" }}
+      <PrintDom
+        type={printType}
+        outgoingData={dataOutgoing}
+        incomingData={dataIncome}
       />
-      <div id="printContent" style={{ display: "none" }}>
-        <section className="text-center">
-          <h1>ព្រះរាជាណាចក្រកម្ពុជា</h1>
-          <h1>ជាតិ សាសនា ព្រះមហាក្សត្រ</h1>
-          <h1 style={{ fontFamily: "tacteng" }}>6</h1>
-        </section>
-        {(dataOutgoing || []).map((v, i) => {
-          return (
-            <h1 key={v._id}>
-              {i + 1} - {v.subject}
-            </h1>
-          );
-        })}
-        l{" "}
-      </div>
-      <div className="max-w-lg mx-auto">
-        <section className="text-center ">
-          <h1>ព្រះរាជាណាចក្រកម្ពុជា</h1>
-          <h1>ជាតិ សាសនា ព្រះមហាក្សត្រ</h1>
-          <h1 style={{ fontFamily: "tacteng" }}>6</h1>
-        </section>
-        <section style={{ width: "30%", textAlign: "center" }}>
-          <h1>ក្រសួងយុត្តិធម៌</h1>
-          <h1>នាយកដ្ឋានកិច្ចការរដ្ឋបាល</h1>
-        </section>
-        <section className="text-center">
-          <h1>លិខិតចូលសម្រាប់ថ្ងៃទី ១៥ ខែ តុលារ ឆ្នាំ ២០២១</h1>
-          <table id="printTable" style={{ width: "100%" }}>
-            <tr>
-              <th style={{ width: "6%"}}>ល.រ</th>
-              <th style={{ width: "40%"}}>កម្មវត្ថុ</th>
-              <th  style={{ width: "10%"}}>លេខ</th>
-              <th style={{ width: "15%"}}>ប្រភព</th>
-              <th style={{ width: "15%"}}>ចំនួនច្បាប់</th>
-              <th>ផ្សេងៗ</th>
-            </tr>
-            {Array(15)
-              .fill(0)
-              .map((v, i) => {
-                let returnDom = (
-                  <tr key={i}>
-                    <td>{i + 1}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                );
-                if (i == 14) {
-                  returnDom = (
-                    <>
-                      <tr key={i}>
-                        <td>{i + 1}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      <tr key={i + 1}>
-                        <td colSpan="4">សរុប</td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                    </>
-                  );
-                }
-                return returnDom;
-              })}
-          </table>
-        </section>
-      </div>
     </section>
   );
 }

@@ -2,17 +2,6 @@ import { Table, Tag, Space } from "antd";
 import useTranslation from "next-translate/useTranslation";
 import { mutate } from "swr";
 
-const data = [
-  {
-    key: "1",
-    name: "John Brown",
-    age: 32,
-    address: "New York No. 1 Lake Park",
-    department: ["nice", "developer"],
-    toDepartment: ["nice", "123"],
-  },
-];
-
 const DocumentsTable = ({
   type,
   data,
@@ -47,12 +36,12 @@ const DocumentsTable = ({
       key: "files",
       render: (files, record) => {
         return (
-          <a
+          <a className="text-blue-500"
             onClick={() => {
               setSelectedDocumentPDF(record);
             }}
           >
-            {files.map((v) => v.split("public\\file-uploads\\")[1]).join("\n")}
+            {files.map((v) => v.split("public\\file-uploads\\")[1]).join(" | ")}
           </a>
         );
       },
@@ -84,7 +73,7 @@ const DocumentsTable = ({
       render: (text, record) => (
         <Space size="middle" className="text-blue-600">
           {type == "income" ? (
-            <a onClick={outgoing.bind(null, record._id)}>{t('outgoing')}</a>
+            <a onClick={outgoing.bind(null, record._id)}>{t('toOutgoing')}</a>
           ) : (
             <a
               onClick={async () => {

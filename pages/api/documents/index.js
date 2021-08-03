@@ -7,7 +7,7 @@ import Document from "../../../models/Document";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(process.cwd(), "public","file-uploads"));
+    cb(null, "../../../public/file-uploads");
   },
   filename: function (req, file, cb) {
     return cb(

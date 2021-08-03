@@ -164,6 +164,7 @@ const AddModal = ({ visible, setVisible }) => {
           <Input />
         </Form.Item>
         <Upload
+        action="api/hello"
           accept="application/pdf"
           fileList={fileList}
           multiple

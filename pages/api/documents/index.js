@@ -1,12 +1,13 @@
 import nc from "next-connect";
 import multer from "multer";
 import morgan from "morgan";
+import path from 'path';
 import database from "../../../middlewares/database";
 import Document from "../../../models/Document";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/file-uploads");
+    cb(null, path.join(process.cwd(), "public","file-uploads"));
   },
   filename: function (req, file, cb) {
     return cb(

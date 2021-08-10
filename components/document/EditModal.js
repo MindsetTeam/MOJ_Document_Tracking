@@ -11,8 +11,8 @@ import useTranslation from "next-translate/useTranslation";
 const { Option } = Select;
 
 const EditModal = ({ visible, data, onClose }) => {
-  const { t } = useTranslation("home");
   const [formEdit] = Form.useForm();
+  const { t } = useTranslation("home");
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [fileList, setFileList] = useState([]);
   const prefixSelectorPhoneNumber = (
@@ -69,23 +69,32 @@ const EditModal = ({ visible, data, onClose }) => {
     //   setConfirmLoading(false);
     // }, 2000);
   };
- 
+
   const handleCancel = () => {
+    // formEdit.resetFields();
     formEdit.resetFields();
     onClose();
   };
+  useEffect(() => {
+    console.log("modal edit");
+    if (visible == true) {
+      formEdit.setFieldsValue(data);
+    } else {
+      formEdit.resetFields();
+    }
+  }, [visible]);
   return (
     <Modal
+      destroyOnClose={true}
       title={`Edit Documents ID ${data?._id}`}
       visible={visible}
       onOk={handleOk}
-      destroyOnClose
       okText={t("ok")}
       cancelText={t("cancel")}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
     >
-      <Form name="edit" preserve={false} initialValues={{ ...data }} form={formEdit}>
+      <Form preserve={false} form={formEdit}>
         <Form.Item
           label={t("username")}
           name="username"

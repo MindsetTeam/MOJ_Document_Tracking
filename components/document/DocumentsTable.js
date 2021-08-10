@@ -341,10 +341,12 @@ const DocumentsTable = ({
   // cancelSort: 'Click to cancel sort',
   const [selectedEditData, setSelectedEditData] = useState({})
   const [editModalVisible, setEditModalVisible] = useState(false)
+  
   const onCloseEditModal = () => {
     setSelectedEditData({})
     setEditModalVisible(false)
   }
+
   return (
     <div>
       <EditModal data={selectedEditData} visible={editModalVisible} onClose={onCloseEditModal} />

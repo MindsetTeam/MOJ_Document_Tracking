@@ -7,6 +7,7 @@ const DocumentSchema = new mongoose.Schema(
     subject: String,
     number: String,
     department: [{ type: String }],
+    incomeDate: Date,
     note: String,
     files: [{ type: String }],
     toDepartment: [{ type: String }],

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal, Form, Input, Select, Button, Upload } from "antd";
 import {
   MinusCircleOutlined,
@@ -10,9 +10,9 @@ import useTranslation from "next-translate/useTranslation";
 
 const { Option } = Select;
 
-const AddModal = ({ visible, setVisible }) => {
+const EditModal = ({ visible, data, onClose }) => {
   const { t } = useTranslation("home");
-  const [formAdd] = Form.useForm();
+  const [formEdit] = Form.useForm();
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [fileList, setFileList] = useState([]);
   const prefixSelectorPhoneNumber = (
@@ -30,7 +30,7 @@ const AddModal = ({ visible, setVisible }) => {
 
   const handleOk = async () => {
     setConfirmLoading(true);
-    const dataForm = formAdd.getFieldsValue();
+    const dataForm = formEdit.getFieldsValue();
     let formData = new FormData();
     fileList.forEach((file) => {
       formData.append("files", file.originFileObj);
@@ -60,7 +60,7 @@ const AddModal = ({ visible, setVisible }) => {
     setVisible(false);
     setConfirmLoading(false);
     setFileList([]);
-    formAdd.resetFields();
+    formEdit.resetFields();
     mutate("/api/documents?type=income&search=&sort=&limit=10&page=1");
     mutate("/api/documents/department?type=outgoing");
     mutate("/api/documents/department?type=income");
@@ -69,14 +69,14 @@ const AddModal = ({ visible, setVisible }) => {
     //   setConfirmLoading(false);
     // }, 2000);
   };
-
+ 
   const handleCancel = () => {
-    console.log("Clicked cancel button");
-    setVisible(false);
+    formEdit.resetFields();
+    onClose();
   };
   return (
     <Modal
-      title={t("add new incoming document")}
+      title={`Edit Documents ID ${data?._id}`}
       visible={visible}
       onOk={handleOk}
       destroyOnClose
@@ -84,9 +84,8 @@ const AddModal = ({ visible, setVisible }) => {
       cancelText={t("cancel")}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
-      maskClosable={false}
     >
-      <Form name="basic" initialValues={{ prefix: "855" }} form={formAdd}>
+      <Form name="edit" preserve={false} initialValues={{ ...data }} form={formEdit}>
         <Form.Item
           label={t("username")}
           name="username"
@@ -183,4 +182,4 @@ const AddModal = ({ visible, setVisible }) => {
   );
 };
 
-export default AddModal;
+export default EditModal;

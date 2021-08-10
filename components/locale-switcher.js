@@ -12,7 +12,7 @@ export default function LocaleSwitcher() {
   
   return (
     <div>
-      {t('switch locale')}
+      {t('switch locale')} : 
       {otherLocales.map((locale) => {
         const { pathname, query, asPath } = router;
         console.log({ pathname, query, asPath })

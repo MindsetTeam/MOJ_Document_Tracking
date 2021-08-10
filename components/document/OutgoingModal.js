@@ -44,7 +44,7 @@ const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
                 <Form.Item
                   label={index === 0 ? t('department') : ""}
                   required={false}
-                  key={field.key}
+                  key={index}
                 >
                   <Form.Item
                     {...field}

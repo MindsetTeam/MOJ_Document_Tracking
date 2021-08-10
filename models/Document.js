@@ -5,6 +5,7 @@ const DocumentSchema = new mongoose.Schema(
     username: String,
     phoneNumber: String,
     subject: String,
+    number: String,
     department: [{ type: String }],
     note: String,
     files: [{ type: String }],

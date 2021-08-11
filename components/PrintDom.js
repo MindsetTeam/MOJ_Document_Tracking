@@ -23,6 +23,7 @@ const PrintDom = ({ type = "income", data =[], session,date }) => {
         <h1 className="text-center text-xl font-bold my-4">{session}
           {t("title", {
             type: tHome(type),
+            session,
             date: date.format('L')|| date,
           })}
         </h1>
@@ -43,7 +44,7 @@ const PrintDom = ({ type = "income", data =[], session,date }) => {
                 <tr key={i}>
                   <td>{i + 1}</td>
                   <td>{v.subject}</td>
-                  <td>{v._id}</td>
+                  <td>{v.number}</td>
                   <td>{v.department.join(` - `)}</td>
                   <td>{v.files.length}</td>
                   <td>{v.note}</td>

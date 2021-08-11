@@ -1,39 +1,82 @@
-import { Modal, Form, Input, Select, Button, DatePicker } from "antd";
-import {
-  MinusCircleOutlined,
-  PlusOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Modal, Form, Input, DatePicker, Button } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
+import moment from "moment";
+import { mutate } from "swr";
 import useTranslation from "next-translate/useTranslation";
 
-const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
-  const { t } = useTranslation("home");
+const EditOutgoingModal = ({ visible, data, onClose,reFetchNewData }) => {
   const [outgoingForm] = Form.useForm();
+  const { t } = useTranslation("home");
   const [confirmLoading, setConfirmLoading] = useState(false);
-  const handleCancel = () => {
-    console.log("Clicked cancel button");
-    outgoingForm.resetFields();
-    setVisible(false);
+
+  const handleOk = async () => {
+    setConfirmLoading(true);
+    const dataForm = outgoingForm.getFieldsValue();
+    console.log(dataForm);
+    const formData = new FormData();
+    for (const key in dataForm) {
+      if (Object.hasOwnProperty.call(dataForm, key)) {
+        if (key === "outgoingDate") {
+          formData.append(key, dataForm[key]?.toJSON());
+          continue;
+        }
+        if (key === "toDepartment") {
+          dataForm[key].forEach((v) => {
+            formData.append("toDepartment[]", v);
+          });
+          continue;
+        }
+        formData.append(key, dataForm[key]);
+      }
+    }
+
+    await fetch("/api/documents/" + data._id, {
+      method: "PUT",
+      // body: JSON.stringify({
+      //   ...dataForm,
+      //   outgoingDate: dataForm.outgoingDate.toJSON(),
+      // }),
+      // headers: {
+      //      'Content-Type': 'application/json'
+      // }, 2000
+      body: formData,
+    });
+    setConfirmLoading(false);
+    onClose();
+    reFetchNewData()
+    // mutate("/api/documents?type=income&search=&sort=&limit=10&page=1");
+    // mutate("/api/documents/department?type=outgoing");
+    // mutate("/api/documents/department?type=income");
+    // // setTimeout(() => {
+    // //   setVisible(false);
+    // //   setConfirmLoading(false);
+    // // }, 2000);
   };
 
+  const handleCancel = () => {
+    onClose();
+  };
+  useEffect(() => {
+    if (visible == true) {
+      outgoingForm.setFieldsValue({
+        ...data,
+        outgoingDate: moment(data.outgoingDate),
+      });
+    } else {
+      outgoingForm.resetFields();
+    }
+  }, [visible]);
   return (
     <Modal
-      title={t("outgoing")}
+      destroyOnClose={true}
+      title={`Edit Documents ID ${data?._id}`}
       visible={visible}
+      onOk={handleOk}
       okText={t("ok")}
       cancelText={t("cancel")}
-      onOk={() => {
-        setConfirmLoading(true);
-        const data = outgoingForm.getFieldsValue();
-        handlerOk(data, () => {
-          outgoingForm.resetFields();
-          setConfirmLoading(false);
-        });
-      }}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
-      destroyOnClose={true}
     >
       <Form form={outgoingForm}>
         <Form.Item name="outgoingDate" label="Outgoing Date">
@@ -96,4 +139,4 @@ const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
   );
 };
 
-export default OutgoingModal;
+export default EditOutgoingModal;

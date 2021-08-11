@@ -19,6 +19,7 @@ import useSWR, { mutate } from "swr";
 import { useState } from "react";
 import useDebounce from "../../hooks/useDebounce";
 import EditModal from "./EditModal";
+import EditOutgoingModal from "./EditOutgoingModal";
 
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -52,7 +53,7 @@ const DocumentsTable = ({
           date.map((v) => `&date=${v.toJSON()}`).join("&") +
           "&sort=" +
           (createdAtOrder === "ascend"
-            ? "createdAt"
+            ? "incomeDate"
             : numberOrder === "ascend"
             ? "number"
             : numberOrder === "descend"
@@ -80,7 +81,7 @@ const DocumentsTable = ({
           date.map((v) => `&date=${v.toJSON()}`).join("&") +
           "&sort=" +
           (createdAtOrder === "ascend"
-            ? "createdAt"
+            ? "outgoingDate"
             : numberOrder === "ascend"
             ? "number"
             : numberOrder === "descend"
@@ -104,7 +105,7 @@ const DocumentsTable = ({
           date.map((v) => `&date=${v.toJSON()}`).join("&") +
           "&sort=" +
           (createdAtOrder === "ascend"
-            ? "createdAt"
+            ? "incomeDate"
             : numberOrder === "ascend"
             ? "number"
             : numberOrder === "descend"
@@ -124,7 +125,7 @@ const DocumentsTable = ({
           date.map((v) => `&date=${v.toJSON()}`).join("&") +
           "&sort=" +
           (createdAtOrder === "ascend"
-            ? "createdAt"
+            ? "outgoingDate"
             : numberOrder === "ascend"
             ? "number"
             : numberOrder === "descend"
@@ -154,6 +155,47 @@ const DocumentsTable = ({
   //     });
   //   });
 
+  const reFetchNewData = () => {
+    mutate(
+      "/api/documents?type=income&search=" +
+        debounceValue +
+        department.map((v) => `&department=${v}`).join("&") +
+        date.map((v) => `&date=${v.toJSON()}`).join("&") +
+        "&sort=" +
+        (createdAtOrder === "ascend"
+          ? "incomeDate"
+          : numberOrder === "ascend"
+          ? "number"
+          : numberOrder === "descend"
+          ? "-number"
+          : "") +
+        "&limit=" +
+        pageSize +
+        "&page=" +
+        currentPage
+    );
+    mutate(
+      "/api/documents?type=outgoing&search=" +
+        debounceValue +
+        department.map((v) => `&department=${v}`).join("&") +
+        date.map((v) => `&date=${v.toJSON()}`).join("&") +
+        "&sort=" +
+        (createdAtOrder === "ascend"
+          ? "outgoingDate"
+          : numberOrder === "ascend"
+          ? "number"
+          : numberOrder === "descend"
+          ? "-number"
+          : "") +
+        "&limit=" +
+        pageSize +
+        "&page=" +
+        currentPage
+    );
+    mutate("/api/documents/department?type=outgoing");
+    mutate("/api/documents/department?type=income");
+  };
+
   const handlerFilterChange = (changedValue, allValues) => {
     console.log(changedValue);
   };
@@ -166,10 +208,7 @@ const DocumentsTable = ({
         "Content-Type": "application/json",
       },
     });
-    mutate("/api/documents?type=income&search=&sort=&limit=10&page=1");
-    mutate("/api/documents?type=outgoing&search=&sort=&limit=10&page=1");
-    mutate("/api/documents/department?type=outgoing");
-    mutate("/api/documents/department?type=income");
+    reFetchNewData();
   };
 
   const handleTableChange = (pagination, filters, sorter) => {
@@ -184,7 +223,11 @@ const DocumentsTable = ({
     // }
     setPageSize(pagination.pageSize);
     setCurrentPage(pagination.current);
-    if (sorter.columnKey == "createdAt") {
+    if (sorter.columnKey == "incomeDate") {
+      setCreatedAtOrder(sorter.order);
+      setNumberOrder("");
+    }
+    if (sorter.columnKey == "outgoingDate") {
       setCreatedAtOrder(sorter.order);
       setNumberOrder("");
     }
@@ -255,11 +298,10 @@ const DocumentsTable = ({
     },
     {
       title: t("date"),
-      dataIndex: "createdAt",
-      key: "createdAt",
+      dataIndex: type === "income" ? "incomeDate" : "outgoingDate",
+      key: type === "income" ? "incomeDate" : "outgoingDate",
       render: (date) => new Date(date).toLocaleString("en-GB"),
       sorter: true,
-
       sortOrder: createdAtOrder,
       sortDirections: ["ascend"],
     },
@@ -273,7 +315,7 @@ const DocumentsTable = ({
           ) : (
             <a
               onClick={async () => {
-                await fetch("/api/documents/" + record._id, {
+                await fetch("/api/documents/" + record._id + "/json", {
                   method: "PUT",
                   headers: {
                     "Content-Type": "application/json",
@@ -283,14 +325,7 @@ const DocumentsTable = ({
                     outgoingDate: null,
                   }),
                 });
-                mutate(
-                  "/api/documents?type=income&search=&sort=&limit=10&page=1"
-                );
-                mutate(
-                  "/api/documents?type=outgoing&search=&sort=&limit=10&page=1"
-                );
-                mutate("/api/documents/department?type=outgoing");
-                mutate("/api/documents/department?type=income");
+                reFetchNewData();
               }}
             >
               {t("restore")}
@@ -339,17 +374,32 @@ const DocumentsTable = ({
   // triggerDesc: 'Click sort by descend',
   // triggerAsc: 'Click sort by ascend',
   // cancelSort: 'Click to cancel sort',
-  const [selectedEditData, setSelectedEditData] = useState({})
-  const [editModalVisible, setEditModalVisible] = useState(false)
-  
+  const [selectedEditData, setSelectedEditData] = useState({});
+  const [editModalVisible, setEditModalVisible] = useState(false);
+
   const onCloseEditModal = () => {
-    setSelectedEditData({})
-    setEditModalVisible(false)
-  }
+    setSelectedEditData({});
+    setEditModalVisible(false);
+  };
 
   return (
     <div>
-      <EditModal data={selectedEditData} visible={editModalVisible} onClose={onCloseEditModal} />
+      {type == "income" ? (
+        <EditModal
+          data={selectedEditData}
+          visible={editModalVisible}
+          onClose={onCloseEditModal}
+          reFetchNewData={reFetchNewData}
+        />
+      ) : (
+        <EditOutgoingModal
+          data={selectedEditData}
+          visible={editModalVisible}
+          onClose={onCloseEditModal}
+          reFetchNewData={reFetchNewData}
+        />
+      )}
+
       <Table
         pagination={{
           total: type === "income" ? totalIncomeData : totalOutgoingData,

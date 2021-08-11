@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { Modal, Form, Input, Select, Button, Upload } from "antd";
+import { Modal, Form, Input,DatePicker, Select, Button, Upload } from "antd";
 import {
   MinusCircleOutlined,
   PlusOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
+import moment from 'moment';
 import { mutate } from "swr";
 import useTranslation from "next-translate/useTranslation";
 
 const { Option } = Select;
 
-const EditModal = ({ visible, data, onClose }) => {
+const EditModal = ({ visible, data, onClose,reFetchNewData }) => {
   const [formEdit] = Form.useForm();
   const { t } = useTranslation("home");
   const [confirmLoading, setConfirmLoading] = useState(false);
@@ -33,7 +34,11 @@ const EditModal = ({ visible, data, onClose }) => {
     const dataForm = formEdit.getFieldsValue();
     let formData = new FormData();
     fileList.forEach((file) => {
-      formData.append("files", file.originFileObj);
+      if (file.oldURLFile) {
+        formData.append("fileList[]", file.oldURLFile);
+      } else {
+        formData.append("files", file.originFileObj);
+      }
     });
     for (const key in dataForm) {
       if (Object.hasOwnProperty.call(dataForm, key)) {
@@ -50,37 +55,45 @@ const EditModal = ({ visible, data, onClose }) => {
           });
           continue;
         }
-        formData.append(key, dataForm[key]);
+        formData.append(key, dataForm[key] || "");
       }
     }
-    await fetch("/api/documents", {
-      method: "POST",
+    await fetch("/api/documents/" + data._id, {
+      method: "PUT",
       body: formData,
     });
-    setVisible(false);
+    
     setConfirmLoading(false);
     setFileList([]);
-    formEdit.resetFields();
-    mutate("/api/documents?type=income&search=&sort=&limit=10&page=1");
-    mutate("/api/documents/department?type=outgoing");
-    mutate("/api/documents/department?type=income");
-    // setTimeout(() => {
-    //   setVisible(false);
-    //   setConfirmLoading(false);
-    // }, 2000);
+    onClose()
+    reFetchNewData()
+    // // setTimeout(() => {
+    // //   setVisible(false);
+    // //   setConfirmLoading(false);
+    // // }, 2000);
   };
 
   const handleCancel = () => {
-    // formEdit.resetFields();
-    formEdit.resetFields();
     onClose();
   };
   useEffect(() => {
-    console.log("modal edit");
     if (visible == true) {
-      formEdit.setFieldsValue(data);
+      formEdit.setFieldsValue({
+        ...data,
+        incomeDate: moment(data.incomeDate),
+        prefix: "+855",
+        phoneNumber: data.phoneNumber.slice(3),
+      });
+      setFileList(
+        (data.files || []).map((v) => ({
+          name: v.replace(/^.*[\\\/]/, "").replace(/-\w{5}\./, "."),
+          url: v.split("uploads\\").join("uploads\\download\\"),
+          oldURLFile: v,
+        }))
+      );
     } else {
       formEdit.resetFields();
+      setFileList([]);
     }
   }, [visible]);
   return (
@@ -122,6 +135,17 @@ const EditModal = ({ visible, data, onClose }) => {
         >
           <Input />
         </Form.Item>
+        <Form.Item
+          label={"Date"}
+          name="incomeDate"
+          // rules={[{ required: true, message: "Please input your Subject!" }]}
+        >
+          <DatePicker
+            showTime={{ use12Hours: true }}
+            format="YYYY-MM-DD hh:mma"
+            style={{ width: "100%" }}
+          />
+        </Form.Item>
         <Form.Item label={t("number")} name="number">
           <Input />
         </Form.Item>
@@ -141,8 +165,7 @@ const EditModal = ({ visible, data, onClose }) => {
                       {
                         required: true,
                         whitespace: true,
-                        message:
-                          "Please select department or delete this field.",
+                        message: "Please select department.",
                       },
                     ]}
                     noStyle

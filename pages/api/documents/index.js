@@ -1,34 +1,9 @@
 import nc from "next-connect";
-import multer from "multer";
-import { nanoid } from "nanoid";
-import path from "path";
-import fs from "fs";
 import morgan from "morgan";
 import database from "../../../middlewares/database";
 import Document from "../../../models/Document";
 import escapeRegExp from "../../../lib/escapeReg";
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = `0${currentDate.getMonth() + 1}`.slice(-2);
-    const currentFullDate = currentDate
-      .toLocaleDateString("en-GB")
-      .replace(/\//g, "-");
-    const uploadDirectory = `./uploads/${currentYear}/${currentMonth}/${currentFullDate}`;
-    if (!fs.existsSync(uploadDirectory)) {
-      fs.mkdirSync(uploadDirectory, { recursive: true });
-    }
-    cb(null, uploadDirectory);
-  },
-  filename: function (req, file, cb) {
-    const uuid = nanoid(5);
-    const { ext, name } = path.parse(file.originalname);
-    return cb(null, name + "-" + uuid + ext);
-  },
-});
-const upload = multer({ storage });
+import upload from "../../../middlewares/uploadFile";
 
 const handler = nc().use(morgan("dev")).use(database);
 handler.get(async (req, res) => {
@@ -133,23 +108,23 @@ handler.get(async (req, res) => {
     if (req.query.sort) {
       query.sort(req.query.sort.split(",").join(""));
     } else {
-      query.sort("-createdAt");
+      query.sort(
+        req.query.type === "outgoing" ? "-outgoingDate" : "-incomeDate"
+      );
     }
 
-    let limit = +req.query.limit ||10;
-    let page = +req.query.page ||1;
-    let startIndex = (page-1)*limit;
-    
+    let limit = +req.query.limit || 10;
+    let page = +req.query.page || 1;
+    let startIndex = (page - 1) * limit;
+
     const data = await query.skip(startIndex).limit(limit);
     const totalResults = await Document.countDocuments(queryString);
-    return res
-      .status(200)
-      .json({
-        success: true,
-        msg: "Query Documents",
-        data,
-        total: totalResults,
-      });
+    return res.status(200).json({
+      success: true,
+      msg: "Query Documents",
+      data,
+      total: totalResults,
+    });
   } catch (error) {
     console.log(error);
   }

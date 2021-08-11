@@ -5,8 +5,8 @@ import { ConfigProvider } from "antd";
 import "moment/locale/km";
 
 function MyApp({ Component, pageProps }) {
-  const { t } = useTranslation("home");
-  console.log(t("number"));
+  const { t, lang  } = useTranslation("home");
+  console.log(lang);
   return (
     <SWRConfig
       value={{
@@ -31,7 +31,7 @@ function MyApp({ Component, pageProps }) {
           },
           DatePicker: {
             lang: {
-              locale: "en_US",
+              locale: lang,
               placeholder: "Select date",
               rangePlaceholder: ["Start date", "End date"],
               today: "ថ្ងៃនេះ",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Modal, Form, Input, Select, Button, Upload } from "antd";
+import { Modal, Form, Input, Select, Button, Upload, DatePicker } from "antd";
 import {
   MinusCircleOutlined,
   PlusOutlined,
@@ -48,6 +48,10 @@ const AddModal = ({ visible, setVisible }) => {
           dataForm[key].forEach((v) => {
             formData.append("department[]", v);
           });
+          continue;
+        }
+        if (key === "incomeDate") {
+          formData.append(key, dataForm.incomeDate?.toJSON() || new Date());
           continue;
         }
         formData.append(key, dataForm[key]);
@@ -114,6 +118,17 @@ const AddModal = ({ visible, setVisible }) => {
         >
           <Input />
         </Form.Item>
+        <Form.Item
+          label={"Date"}
+          name="incomeDate"
+          // rules={[{ required: true, message: "Please input your Subject!" }]}
+        >
+          <DatePicker
+            showTime={{ use12Hours: true }}
+            format="YYYY-MM-DD hh:mma"
+            style={{ width: "100%" }}
+          />
+        </Form.Item>
         <Form.Item label={t("number")} name="number">
           <Input />
         </Form.Item>
@@ -133,8 +148,7 @@ const AddModal = ({ visible, setVisible }) => {
                       {
                         required: true,
                         whitespace: true,
-                        message:
-                          "Please select department or delete this field.",
+                        message: "Please select department .",
                       },
                     ]}
                     noStyle

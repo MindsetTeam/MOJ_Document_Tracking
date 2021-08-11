@@ -86,13 +86,15 @@ export default function Home() {
     setSelectDocumentID(id);
     setOutgoingModalVisible(true);
   };
-  const handlerOkOutgoing = async (departments, callback) => {
-    await fetch("/api/documents/" + selectDocumentID, {
+  const handlerOkOutgoing = async (outgoingData, callback) => {
+    const {outgoingDate, toDepartment} = outgoingData;
+    console.log(outgoingData);
+    await fetch("/api/documents/" + selectDocumentID+'/json', {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...departments, outgoingDate: new Date() }),
+      body: JSON.stringify({ toDepartment, outgoingDate: outgoingDate?.toJSON() || new Date() }),
     });
     callback();
     setOutgoingModalVisible(false);

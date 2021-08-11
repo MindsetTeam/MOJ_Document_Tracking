@@ -20,7 +20,7 @@ const PrintDom = ({ type = "income", data =[], session,date }) => {
         <h1>{t("subheader2")}</h1>
       </section>
       <section className="text-center">
-        <h1 className="text-center text-xl font-bold my-4">{session}
+        <h1 className="text-center text-xl font-bold my-4">
           {t("title", {
             type: tHome(type),
             session,

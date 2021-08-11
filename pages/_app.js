@@ -5,20 +5,19 @@ import { ConfigProvider } from "antd";
 import "moment/locale/km";
 
 function MyApp({ Component, pageProps }) {
-  const { t, lang  } = useTranslation("home");
+  const { t, lang } = useTranslation("home");
   console.log(lang);
   return (
     <SWRConfig
       value={{
         fetcher: (resource, init) =>
-          fetch(resource, init)
-            .then((res) => res.json())
+          fetch(resource, init).then((res) => res.json()),
       }}
     >
       <ConfigProvider
         locale={{
           Pagination: {
-            items_per_page: "/ ទំព័រ",
+            items_per_page: t("itemPerPage"),
             jump_to: "លោត​ទៅ",
             jump_to_confirm: "បញ្ជាក់",
             page: "ទំព័រ",
@@ -29,27 +28,35 @@ function MyApp({ Component, pageProps }) {
             prev_3: "៣ ទំព័រថយក្រោយ",
             next_3: "៣ ទំព័រទៅមុខ",
           },
+          Empty: {
+            description: t("empty"),
+          },
+          Modal: {
+            okText: t("ok"),
+            cancelText: t("cancel"),
+            justOkText: t("ok"),
+          },
           DatePicker: {
             lang: {
               locale: lang,
-              placeholder: "Select date",
-              rangePlaceholder: ["Start date", "End date"],
+              placeholder: t("datePlaceholder"),
+              rangePlaceholder: [t("startDate"), t("endDate")],
               today: "ថ្ងៃនេះ",
               now: "Now",
               backToToday: "Back to today",
-              ok: "Okសដថ",
+              ok: t("ok"),
               clear: "Clear",
               month: "Month",
               year: "Year",
               timeSelect: "Select time",
-              dateSelect: "Select date",
+              dateSelect:  t("datePlaceholder"),
               monthSelect: "Choose a month",
               yearSelect: "Choose a year",
               decadeSelect: "Choose a decade",
               yearFormat: "YYYY",
               dateFormat: "M/D/YYYY",
               dayFormat: "D",
-              dateTimeFormat: "M/D/YYYY HH:mm:ss",
+              dateTimeFormat: "M/D/YYYY HH:mma",
               monthFormat: "MMMM",
               monthBeforeYear: true,
               previousMonth: "Previous month (PageUp)",
@@ -64,10 +71,10 @@ function MyApp({ Component, pageProps }) {
             timePickerLocale: {
               placeholder: "Select time",
             },
-            dateFormat: "YYYY-MM-DD",
-            dateTimeFormat: "YYYY-MM-DD HH:mm:ss",
-            weekFormat: "YYYY-wo",
-            monthFormat: "YYYY-MM",
+            dateFormat: "DD-MM-YYYY",
+            dateTimeFormat: "DD-MM-YYYY hh:mma",
+            weekFormat: "wo-YYYY",
+            monthFormat: "MM-YYYY",
           },
         }}
       >

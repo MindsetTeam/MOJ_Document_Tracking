@@ -35,5 +35,12 @@
   "pdf pagination": "ទំព័រ {{pageNumber}} នៃ {{numPages}}",
   "new tab": "មើលក្នុងផ្ទាំងថ្មី",
   "searchPlaceholder": "លេខ, កម្មវត្ថុ, ផ្សេង, លិខិតច្បាប់, លេខទូរស័ព្ទ, ឈ្មោះ",
-  "filter": "តម្រង"
+  "filter": "តម្រង",
+  "empty": "គ្មាន​ទិន្នន័យ",
+  "datePlaceholder": "ជ្រើសរើសកាលបរិច្ឆេទ",
+  "startDate": "កាលបរិច្ឆេទចាប់ផ្តើម",
+  "endDate": "កាលបរិច្ឆេទបញ្ចប់",
+  "now": "ឥឡូវ​នេះ",
+  "today": "ថ្ងៃនេះ",
+  "itemPerPage": "/ ទំព័រ"
 }

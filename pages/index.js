@@ -138,8 +138,6 @@ export default function Home() {
 
       <Modal
         title={t("print")}
-        okText={t("ok")}
-        cancelText={t("cancel")}
         visible={printModalVisible}
         onOk={async () => {
           const printFormData = formPrint.getFieldsValue();

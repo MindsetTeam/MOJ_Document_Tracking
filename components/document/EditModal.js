@@ -102,8 +102,6 @@ const EditModal = ({ visible, data, onClose,reFetchNewData }) => {
       title={`Edit Documents ID ${data?._id}`}
       visible={visible}
       onOk={handleOk}
-      okText={t("ok")}
-      cancelText={t("cancel")}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
     >

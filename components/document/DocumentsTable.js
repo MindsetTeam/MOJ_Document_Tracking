@@ -464,7 +464,6 @@ const DocumentsTable = ({
                     }}
                     showNow
                     showTime
-                    placeholder={["start", "end"]}
                   />
                 </Form.Item>
               </Col>

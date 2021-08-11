@@ -21,8 +21,6 @@ const OutgoingModal = ({ visible, setVisible, handlerOk }) => {
     <Modal
       title={t("outgoing")}
       visible={visible}
-      okText={t("ok")}
-      cancelText={t("cancel")}
       onOk={() => {
         setConfirmLoading(true);
         const data = outgoingForm.getFieldsValue();

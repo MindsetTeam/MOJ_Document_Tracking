@@ -84,8 +84,6 @@ const AddModal = ({ visible, setVisible }) => {
       visible={visible}
       onOk={handleOk}
       destroyOnClose
-      okText={t("ok")}
-      cancelText={t("cancel")}
       confirmLoading={confirmLoading}
       onCancel={handleCancel}
       maskClosable={false}

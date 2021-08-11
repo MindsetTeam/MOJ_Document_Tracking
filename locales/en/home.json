@@ -35,5 +35,12 @@
   "pdf pagination": "Page {{pageNumber}} of {{numPages}}",
   "new tab": "View In New Tab",
   "searchPlaceholder": "Number, Subject, Note, Files Name, Phone Number, Name",
-  "filter": "FILTERS"
+  "filter": "FILTERS",
+  "empty": "No Data",
+  "datePlaceholder": "Select date",
+  "startDate": "Start date",
+  "endDate": "End date",
+  "now": "Now",
+  "today": "Today",
+  "itemPerPage": "/ Page"
 }
